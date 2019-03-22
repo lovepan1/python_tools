@@ -1,0 +1,142 @@
+item {
+  name: "none_of_the_above"
+  label: 0
+  display_name: "background"
+}
+item {
+  name: "None"
+  label: 0
+  display_name: "background"
+}
+item {
+  name: "car"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "ar"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "car1"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "minicar"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "suv"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "suv1"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "suc"
+  label: 1
+  display_name: "car"
+}
+item {
+  name: "truck"
+  label: 2
+  display_name: "truck"
+}
+item {
+  name: "minitruck"
+  label: 2
+  display_name: "truck"
+}
+item {
+  name: "truck1"
+  label: 2
+  display_name: "truck"
+}
+item {
+  name: "minitruck1"
+  label: 2
+  display_name: "truck"
+}
+item {
+  name: "minitrunk"
+  label: 2
+  display_name: "truck"
+}
+item {
+  name: "train"
+  label: 2
+  display_name: "truck"
+}
+item {
+  name: "person"
+  label: 3
+  display_name: "person"
+}
+item {
+  name: "personw"
+  label: 3
+  display_name: "person"
+}
+
+item {
+  name: "bicycle"
+  label: 4
+  display_name: "bicycle"
+}
+item {
+  name: "bus"
+  label: 5
+  display_name: "bus"
+}
+item {
+  name: "minibus"
+  label: 5
+  display_name: "bus"
+}
+item {
+  name: "bus1"
+  label: 5
+  display_name: "bus"
+}
+item {
+  name: "minibus1"
+  label: 5
+  display_name: "bus"
+}
+item {
+  name: "motorbike"
+  label: 6
+  display_name: "motorbike"
+}
+item {
+  name: "dangerouscar"
+  label: 7
+  display_name: "dangerouscar"
+}
+item {
+  name: "dangerouscar1"
+  label: 7
+  display_name: "dangerouscar"
+}
+item {
+  name: "NNN"
+  label: 8
+  display_name: "NNN"
+}
+item {
+  name: "MMM"
+  label: 9
+  display_name: "MMM"
+}
+item {
+  name: "KKK"
+  label: 10
+  display_name: "KKK"
+}
+

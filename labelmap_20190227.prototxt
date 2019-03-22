@@ -1,0 +1,80 @@
+item {
+  name: "none_of_the_above"
+  label: 0
+  display_name: "background"
+}
+item {
+  name: "DiaoChe"
+  label: 1
+  display_name: "DiaoChe"
+}
+item {
+  name: "TaDiao"
+  label: 2
+  display_name: "TaDiao"
+}
+item {
+  name: "TuiTuJi"
+  label: 3
+  display_name: "TuiTuJi"
+}
+item {
+  name: "BengChe"
+  label: 4
+  display_name: "BengChe"
+}
+item {
+  name: "WaJueJi"
+  label: 5
+  display_name: "WaJueJi"
+}
+item {
+  name: "ChanChe"
+  label: 6
+  display_name: "ChanChe"
+}
+item {
+  name: "SuLiaoBu"
+  label: 7
+  display_name: "SuLiaoBu"
+}
+item {
+  name: "FengZheng"
+  label: 8
+  display_name: "FengZheng"
+}
+item {
+  name: "Niao"
+  label: 9
+  display_name: "Niao"
+}
+item {
+  name: "NiaoWo"
+  label: 10
+  display_name: "NiaoWo"
+}
+item {
+  name: "ShanHuo"
+  label: 11
+  display_name: "ShanHuo"
+}
+item {
+  name: "YanWu"
+  label: 12
+  display_name: "YanWu"
+}
+item {
+  name: "JianGeBang"
+  label: 13
+  display_name: "JianGeBang"
+}
+item {
+  name: "JueYuanZi"
+  label: 14
+  display_name: "JueYuanZi"
+}
+item {
+  name: "FangZhenChui"
+  label: 15
+  display_name: "FangZhenChui"
+}
