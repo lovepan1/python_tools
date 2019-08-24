@@ -1,0 +1,269 @@
+# import os
+# import json
+# import numpy as np
+# import shutil
+# import pandas as pd
+# # defect_name2label = {
+# #     '破洞': 1, '水渍': 2, '油渍': 2, '污渍': 2, '三丝': 3, '结头': 4, '花板跳': 5, '百脚': 6, '毛粒': 7,
+# #     '粗经': 8, '松经': 9, '断经': 10, '吊经': 11, '粗维': 12, '纬缩': 13, '浆斑': 14, '整经结': 15, '星跳': 16, '跳花': 16,
+# #     '断氨纶': 17, '稀密档': 18, '浪纹档': 18, '色差档': 18, '磨痕': 19, '轧痕': 19, '修痕': 19, '烧毛痕': 19, '死皱': 20, '云织': 20,
+# #     '双纬': 20, '双经': 20, '跳纱': 20, '筘路': 20, '纬纱不良': 20,
+# # }
+# defect_name2label = {
+#     '破洞': 1, '水渍': 2, '油渍': 3, '污渍': 4, '三丝': 5, '结头': 6, '花板跳': 7, '百脚': 8, '毛粒': 9,
+#     '粗经': 10, '松经': 11, '断经': 12, '吊经': 13, '粗维': 14, '纬缩': 15, '浆斑': 16, '整经结': 17, '星跳': 18, '跳花': 19,
+#     '断氨纶': 20, '稀密档': 21, '浪纹档': 22, '色差档': 23, '磨痕': 24, '轧痕': 25, '修痕': 26, '烧毛痕': 27, '死皱': 28, '云织': 29,
+#     '双纬': 30, '双经': 31, '跳纱': 32, '筘路': 33, '纬纱不良': 34,
+# }
+# class Fabric2COCO:
+#
+#     def __init__(self,mode="train"):
+#         self.images = []
+#         self.annotations = []
+#         self.categories = []
+#         self.img_id = 0
+#         self.ann_id = 0
+#         self.mode =mode
+#         if not os.path.exists("coco/images/{}".format(self.mode)):
+#             os.makedirs("coco/images/{}".format(self.mode))
+#
+#     def to_coco(self, anno_file,img_dir):
+#         self._init_categories()
+#         anno_result= pd.read_json(open(anno_file,"r"))
+#         name_list=anno_result["name"].unique()
+#         for img_name in name_list:
+#             img_anno = anno_result[anno_result["name"] == img_name]
+#             bboxs = img_anno["bbox"].tolist()
+#             defect_names = img_anno["defect_name"].tolist()
+#             assert img_anno["name"].unique()[0] == img_name
+#
+#             img_path=os.path.join(img_dir,img_name)
+#             # img =cv2.imread(img_path)
+#             # h,w,c=img.shape
+#             h,w=1000,2446
+#             self.images.append(self._image(img_path,h, w))
+#
+#             self._cp_img(img_path)
+#
+#             for bbox, defect_name in zip(bboxs, defect_names):
+#                 label= defect_name2label[defect_name]
+#                 annotation = self._annotation(label, bbox)
+#                 self.annotations.append(annotation)
+#                 self.ann_id += 1
+#             self.img_id += 1
+#         instance = {}
+#         instance['info'] = 'fabric defect'
+#         instance['license'] = ['none']
+#         instance['images'] = self.images
+#         instance['annotations'] = self.annotations
+#         instance['categories'] = self.categories
+#         return instance
+#
+#     def _init_categories(self):
+#         for v in range(1,35):
+#             print(v)
+#             category = {}
+#             category['id'] = v
+#             category['name'] = str(v)
+#             category['supercategory'] = 'defect_name'
+#             self.categories.append(category)
+#         # for k, v in defect_name2label.items():
+#         #     category = {}
+#         #     category['id'] = v
+#         #     category['name'] = k
+#         #     category['supercategory'] = 'defect_name'
+#         #     self.categories.append(category)
+#
+#     def _image(self, path,h,w):
+#         image = {}
+#         image['height'] = h
+#         image['width'] = w
+#         image['id'] = self.img_id
+#         image['file_name'] = os.path.basename(path)
+#         return image
+#
+#     def _annotation(self,label,bbox):
+#         area=(bbox[2]-bbox[0])*(bbox[3]-bbox[1])
+#         points=[[bbox[0],bbox[1]],[bbox[2],bbox[1]],[bbox[2],bbox[3]],[bbox[0],bbox[3]]]
+#         annotation = {}
+#         annotation['id'] = self.ann_id
+#         annotation['image_id'] = self.img_id
+#         annotation['category_id'] = label
+#         annotation['segmentation'] = [np.asarray(points).flatten().tolist()]
+#         annotation['bbox'] = self._get_box(points)
+#         annotation['iscrowd'] = 0
+#         annotation['area'] = area
+#         return annotation
+#
+#     def _cp_img(self, img_path):
+#         shutil.copy(img_path, os.path.join("coco/images/{}".format(self.mode), os.path.basename(img_path)))
+#
+#     def _get_box(self, points):
+#         min_x = min_y = np.inf
+#         max_x = max_y = 0
+#         for x, y in points:
+#             min_x = min(min_x, x)
+#             min_y = min(min_y, y)
+#             max_x = max(max_x, x)
+#             max_y = max(max_y, y)
+#         '''coco,[x,y,w,h]'''
+#         return [min_x, min_y, max_x - min_x, max_y - min_y]
+#     def save_coco_json(self, instance, save_path):
+#         import json
+#         with open(save_path, 'w') as fp:
+#             json.dump(instance, fp, indent=1, separators=(',', ': '))
+# '''转换有瑕疵的样本为coco格式'''
+# img_dir = "/home/pcl/data/guangdong1_round1_train1_20190818/defect_Images"
+# anno_dir="/home/pcl/data/guangdong1_round1_train1_20190818/Annotations/anno_train.json"
+# fabric2coco = Fabric2COCO()
+# train_instance = fabric2coco.to_coco(anno_dir,img_dir)
+# if not os.path.exists("coco/annotations/"):
+#     os.makedirs("coco/annotations/")
+# fabric2coco.save_coco_json(train_instance, "coco/annotations/"+'instances_{}.json'.format("train"))
+#
+#
+# # print("\u7ed3\u5934")
+#
+# xml_file.write('<annotation>\n')
+#     f1List = f1.readlines()
+#     f2List = f2.readlines()
+#     f3List = f3.readlines()
+#     f4List = f4.readlines()
+#     #f5List = f5.readlines()
+#     #f6List = f6.readlines()
+#     if(len(f1List) != len(f2List) or len(f2List) != len(f3List)):
+#          print('shape is error')
+#     maxIter = getMax(len(f1List), len(f2List), len(f3List), len(f4List))
+#     for idx in range(maxIter):
+#         try:
+#             line1 = f1List[idx].replace('\n', '')
+#         except:
+#             line1 = 'error1.jpg 1200 900 0'
+#         try:
+#             line2 = f2List[idx].replace('\n', '')
+#         except:
+#             line2 = 'error2.jpg 1200 900 0'
+#         try:
+#             line3 = f3List[idx].replace('\n', '')
+#         except:
+#             line3 = 'error3.jpg 1200 900 0'
+#         try:
+#             line4 = f4List[idx].replace('\n', '')
+#         except:
+#             line4 = 'error4.jpg 1200 900 0'
+#         objectNum1 = int(line1.split(' ')[3])
+#         print('line1 name is %s' %line1.split(' ')[0])
+#         objectNum2 = int(line2.split(' ')[3])
+#         print('line2 name is %s' %line2.split(' ')[0])
+#         objectNum3 = int(line3.split(' ')[3])
+#         print('line3 name is %s' %line3.split(' ')[0])
+#         objectNum4 = int(line4.split(' ')[3])
+#         print('line4 name is %s' %line3.split(' ')[0])
+#         bestObject = getMax(objectNum1, objectNum2, objectNum3, objectNum4)
+#         print(objectNum1)
+#         print(objectNum2)
+#         print(objectNum3)
+#         print(objectNum4)
+#         bestxml = ''
+#         if bestObject == objectNum1:
+#             useLine = line1
+#             bestxml = 'xml1'
+#         if bestObject == objectNum2:
+#             useLine = line2
+#             bestxml = 'xml2'
+#         if bestObject == objectNum3:
+#             useLine = line3
+#             bestxml = 'xml3'
+#         if bestObject == objectNum4:
+#             useLine = line4
+#             bestxml = 'xml4'
+#         print('best line is %s' % bestxml)
+#         imageName = useLine.split(' ')[0]
+#         width = useLine.split(' ')[1]
+#         height = useLine.split(' ')[2]
+#         objectNum = useLine.split(' ')[3]
+#         if int(objectNum) == 0:
+#             flag = 'False'
+#         else:
+#             flag = 'True'
+#         xml_file.write('    <result filename=' + '"' + str(imageName.split('.')[0]) + '" ' + 'flag="' + flag + '">\n')
+#         xml_file.write('        <size>\n')
+#         xml_file.write('            <width>' + str(width) + '</width>\n')
+#         xml_file.write('            <height>' + str(height) + '</height>\n')
+#         xml_file.write('            <depth>3</depth>\n')
+#         xml_file.write('        </size>\n')
+#         if flag == 'True':
+#             for number in range(0, int(objectNum)):
+#                 labelType = useLine.split(' ')[4 + number*5]
+#                 xml_file.write('        <object name="'+ labelName[int(labelType)] + '">\n')
+#                 xml_file.write('            <bndbox>\n')
+#                 xml_file.write('                <xmin>' + str(useLine.split(' ')[number*5+5]) + '</xmin>\n')
+#                 xml_file.write('                <ymin>' + str(useLine.split(' ')[number*5+6]) + '</ymin>\n')
+#                 xml_file.write('                <xmax>' + str(useLine.split(' ')[number*5+7]) + '</xmax>\n')
+#                 xml_file.write('                <ymax>' + str(useLine.split(' ')[number*5+8].replace('\n', '')) + '</ymax>\n')
+#                 xml_file.write('            </bndbox>\n')
+#                 xml_file.write('        </object>\n')
+#         xml_file.write('    </result>\n')
+#     xml_file.write('</annotation>\n')
+
+
+
+import os
+import pandas as pd
+defect_name2label = {
+    '破洞': 1, '水渍': 2, '油渍': 3, '污渍': 4, '三丝': 5, '结头': 6, '花板跳': 7, '百脚': 8, '毛粒': 9,
+    '粗经': 10, '松经': 11, '断经': 12, '吊经': 13, '粗维': 14, '纬缩': 15, '浆斑': 16, '整经结': 17, '星跳': 18, '跳花': 19,
+    '断氨纶': 20, '稀密档': 21, '浪纹档': 22, '色差档': 23, '磨痕': 24, '轧痕': 25, '修痕': 26, '烧毛痕': 27, '死皱': 28, '云织': 29,
+    '双纬': 30, '双经': 31, '跳纱': 32, '筘路': 33, '纬纱不良': 34,
+}
+img_dir = "/home/pcl/data/guangdong1_round1_train1_20190818/defect_Images"
+anno_dir="/home/pcl/data/guangdong1_round1_train1_20190818/Annotations/anno_train.json"
+xml_dir = "/home/pcl/data/guangdong1_round1_train1_20190818/Annotations/"
+img_list = os.listdir(img_dir)
+
+for img in img_list:
+    print(img)
+    anno_result= pd.read_json(open(anno_dir,"r"))
+    name_list=anno_result["name"].unique()
+    for img_name in name_list:
+        xml_file = open(xml_dir + img_name.replace('jpg', 'xml'), 'w')
+        img_anno = anno_result[anno_result["name"] == img_name]
+        bboxs = img_anno["bbox"].tolist()
+        print(bboxs)
+        objectNum = len(bboxs)
+        defect_names = img_anno["defect_name"].tolist()
+        assert img_anno["name"].unique()[0] == img_name
+
+        img_path=os.path.join(img_dir,img_name)
+        xml_file.write('<annotation>\n')
+        if int(objectNum) == 0:
+            flag = 'False'
+        else:
+            flag = 'True'
+        xml_file.write('    <filename>' + str(img_name) + '</filename>\n')
+        xml_file.write('    <source>\n')
+        xml_file.write('        <database>Unknown</database>\n')
+        xml_file.write('    </source>\n')
+        xml_file.write('    <size>\n')
+        xml_file.write('        <width>' + str(2446) + '</width>\n')
+        xml_file.write('        <height>' + str(1000) + '</height>\n')
+        xml_file.write('        <depth>3</depth>\n')
+        xml_file.write('    </size>\n')
+        xml_file.write('    <segmented>0</segmented>\n')
+        if flag == 'True':
+            for bbox, defect_name in zip(bboxs, defect_names):
+                label= defect_name2label[defect_name]
+                xml_file.write('    <object>\n')
+                xml_file.write('        <name>' + str(label) + '</name>\n')
+                xml_file.write('        <pose>Unspecified</pose>\n')
+                xml_file.write('        <truncated>0</truncated>\n')
+                xml_file.write('        <difficult>0</difficult>\n')
+                xml_file.write('        <bndbox>\n')
+                xml_file.write('            <xmin>' + str(bbox[0]) + '</xmin>\n')
+                xml_file.write('            <ymin>' + str(bbox[1]) + '</ymin>\n')
+                xml_file.write('            <xmax>' + str(bbox[2]) + '</xmax>\n')
+                xml_file.write('            <ymax>' + str(bbox[3]) + '</ymax>\n')
+                xml_file.write('        </bndbox>\n')
+                xml_file.write('    </object>\n')
+        xml_file.write('</annotation>\n')
+        xml_file.close()
