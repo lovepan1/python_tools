@@ -1,0 +1,46 @@
+import mmcv
+from mmcv.runner import load_checkpoint
+from mmdet.apis import init_detector, inference_detector, show_result
+from mmdet.models import build_detector
+import glob, os, json
+import numpy as np
+
+# 构建网络，载入模型
+config_file = 'configs/cascade_rcnn_x101_32x4d_fpn_1x.py' #config file
+checkpoint_file = 'work_dirs/cascade_rcnn_x101_32x4d_fpn_1x/epoch_1.pth' # checkpoint file
+
+# build the model from a config file and a checkpoint file
+print('loading model...')
+model = init_detector(config_file, checkpoint_file, device='cuda:0')
+print('loading complete!')
+
+# 测试多张图片
+path = '/home/pcl/data/guangdong1_round1_testA_20190818' # data path
+imgs = glob.glob(path + '/*.jpg')
+# imgs = 'test.jpg'
+print(imgs)
+result=[]
+thres = 0
+for img_name in imgs:
+    img = mmcv.imread(img_name)
+# for i, res in enumerate(inference_detector(model, imgs)):
+    res = inference_detector(model, img)
+    print(res)
+    print(res)
+    if len(res) != 0:
+        bboxes = np.vstack(res)
+        labels = [np.full(bbox.shape[0], i, dtype=np.int32) for i, bbox in enumerate(res)]
+        labels = np.concatenate(labels)
+        if len(bboxes) > 0:
+            for j, bbox in enumerate(bboxes):
+                bbox = [str(b) for b in bbox]
+                if float(bbox[4]) > thres:
+                    res_line = {'name': os.path.basename(img_name), 'category': int(labels[j] + 1), 'bbox':[round(float(x),2) for x in bbox[:4]], 'score':float(bbox[4])}
+                    result.append(res_line)
+
+# 写入结果
+with open('result.json', 'w') as fp:
+     json.dump(result, fp, indent=4, separators=(',', ': '))
+print('over!')
+
+
